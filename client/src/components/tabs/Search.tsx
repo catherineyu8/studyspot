@@ -4,7 +4,7 @@
  */
 export default function Search() {
 	return (
-		<div>
+		<div className="Search">
 			<p>this is the search page!</p>
 		</div>
 	);
