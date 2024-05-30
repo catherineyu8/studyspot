@@ -35,30 +35,14 @@ public class GetUserInfoHandler implements Route {
         return Utils.toMoshiJson(responseMap);
       }
 
-      // // check if user exists
-      // if (!this.storageHandler.userExists(uid)) {
-      //   responseMap.put("response_type", "failure");
-      //   responseMap.put("error", "uid not found in database");
-      //   return Utils.toMoshiJson(responseMap);
-      // }
-
-      // // check that answer exists
-      // if (answer == null) {
-      //   responseMap.put("response_type", "failure");
-      //   responseMap.put("error", "daily quiz answer cannot be null!");
-      //   return Utils.toMoshiJson(responseMap);
-      // }
-      // // TODO: should we check if uid already exists? or just replace it if it does?
-
-      // Map<String, Object> data = new HashMap<>();
-      // data.put("answer", answer);
-
-      // // use the storage handler to add the document to the database
-      // this.storageHandler.addDailyQuiz(uid, answer);
-
-      responseMap.put("response_type", "success");
-      // responseMap.put("user_info", data);
-
+      Map<String, Object> result = storageHandler.getUser(uid);
+      if (result == null) {
+        responseMap.put("response_type", "failure");
+        responseMap.put("error", "storage handler failed to find the user!");
+      } else {
+        responseMap.put("response_type", "success");
+        responseMap.put("user_info", result);
+      }
     } catch (Exception e) {
       // error likely occurred in the storage handler
       e.printStackTrace();

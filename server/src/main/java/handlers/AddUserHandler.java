@@ -74,7 +74,6 @@ public class AddUserHandler implements Route {
       // TODO: should we check if uid already exists? or just replace it if it does?
 
       responseMap.put("response_type", "success");
-      // responseMap.put("user_info", data);
     } catch (Exception e) {
       // error likely occurred in the storage handler
       e.printStackTrace();

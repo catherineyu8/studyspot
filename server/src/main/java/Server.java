@@ -1,6 +1,7 @@
 import static spark.Spark.after;
 
 import handlers.AddUserHandler;
+import handlers.GetUserInfoHandler;
 import java.io.IOException;
 import spark.Filter;
 import spark.Spark;
@@ -29,12 +30,8 @@ public class Server {
 
       FirebaseUtilities fb = new FirebaseUtilities();
 
-      // used for daily quiz
-      //   Spark.get("add-DQ-answer", new AddDQAnswerHandler(fb));
-      // Spark.get("get-DQ", new GetDQHandler(fb));
-
       Spark.get("add-user", new AddUserHandler(fb));
-      // Spark.get("get-user-info", new GetUserInfoHandler(fb));
+      Spark.get("get-user-info", new GetUserInfoHandler(fb));
       // Spark.get("add-spot", new AddStudySpotHandler(fb));
 
       Spark.notFound(

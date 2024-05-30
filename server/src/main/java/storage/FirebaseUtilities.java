@@ -4,6 +4,7 @@ import com.google.api.core.ApiFuture;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.firestore.CollectionReference;
 import com.google.cloud.firestore.DocumentReference;
+import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 public class FirebaseUtilities /* implements StorageInterface */ {
 
@@ -48,15 +50,15 @@ public class FirebaseUtilities /* implements StorageInterface */ {
     FirebaseApp.initializeApp(options);
   }
 
-  public void getUserIDs() {
-    Firestore db = FirestoreClient.getFirestore(); // get reference to db
-    db.collection("users").get();
-  }
+  // public void getUserIDs() {
+  //   Firestore db = FirestoreClient.getFirestore(); // get reference to db
+  //   db.collection("users").get();
+  // }
 
   // adds a new user to the database. the user's rating list (of ranked spots) will? (TODO: ) be
   // initialized as empty.
-  public void addUser(String uid, String name, String email, Map preferences)
-      throws DatabaseException {
+  public void addUser(String uid, String name, String email, Map preferences) {
+    // throws DatabaseException {
     Firestore db = FirestoreClient.getFirestore(); // get reference to db
 
     Map<String, Object> user = new HashMap<>();
@@ -67,15 +69,31 @@ public class FirebaseUtilities /* implements StorageInterface */ {
     user.put("ranked spots", new ArrayList<>()); // TODO: ???
 
     db.collection("users").document(uid).set(user);
-
-    //   ApiFuture<WriteResult> future = db.collection("users").document(uid).set(user);
-    //   try {
-    //     DocumentSnapshot answerDoc = future.get();
-    // //       if (answerDoc.exists()) {
-    //   } catch (Exception e) {
-    //     throw new DatabaseException(e.getMessage());
-    //   }
   }
+
+  // returns null if something is not found!
+  public Map<String, Object> getUser(String uid) throws InterruptedException, ExecutionException {
+    Firestore db = FirestoreClient.getFirestore(); // get reference to db
+    DocumentReference docRef = db.collection("users").document(uid);
+    DocumentSnapshot futureResult = docRef.get().get();
+    // if (futureResult.exists()) *** checks if there was a result!!! (it will be a null document if not)
+    return futureResult.getData();
+  }
+
+  // public Long getAnswerCount(String quizLabel, String answer) {
+  //     Firestore db = FirestoreClient.getFirestore();
+  //     DocumentReference answerData = db.collection("iq_answers").document(quizLabel);
+  //     ApiFuture<DocumentSnapshot> future = answerData.get();
+  //     try {
+  //       DocumentSnapshot document = future.get();
+  //       // [END firestore_data_get_as_map]
+  //       return (document.exists()) ? (Long) document.getData().get(answer) : null;
+  //     } catch (Exception e) {
+  //       // TODO: figure out what we actually want to do here!
+  //       System.out.println(e.getMessage());
+  //       return Long.valueOf(-1);
+  //     }
+  //   }
 
   // public void getReviewsForSpot(String spot) {
   // db.get documents where forSpot = spot
