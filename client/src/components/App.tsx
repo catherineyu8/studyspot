@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import Navbar from "./Navbar";
+import Authenticate from "./login-auth/Authenticate";
 
 const firebaseConfig = {
 	apiKey: process.env.API_KEY,
@@ -22,8 +23,8 @@ function App() {
 				{/* this part appears across all screens no matter what! */}
 				<h1>welcome to study spot!</h1>
 			</p>
-			<Navbar />
-			{/* TODO: add authroute/login component */}
+			<Authenticate />
+			{/* <Navbar /> */}
 		</div>
 	);
 }
