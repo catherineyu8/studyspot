@@ -4,7 +4,7 @@ import { getLoginCookie } from "./cookie";
 const HOST = "http://localhost:3232";
 
 /**
- * this makes queries to the backend
+ * this makes queries to the backend to edit/access the database, to be called by the frontend.
  * @param endpoint is the endpoint to query on the backend
  * @param query_params are the parameters to pass into the endpoitn
  * @returns
@@ -22,6 +22,31 @@ async function queryAPI(
 		console.error(response.status, response.statusText);
 	}
 	return response.json();
+}
+
+export async function getUserInfo() {
+	return await queryAPI("get-user-info", { uid: getLoginCookie() || "" });
+}
+
+export async function addUser(
+	name: string,
+	email: string,
+	comfort: string,
+	mood: string,
+	noise: string,
+	outlets: string,
+	wifi: string
+) {
+	return await queryAPI("add-user", {
+		uid: getLoginCookie() || "",
+		name: name,
+		email: email,
+		comfort: comfort,
+		mood: mood,
+		noise: noise,
+		outlets: outlets,
+		wifi: wifi,
+	});
 }
 
 // export async function getRecs() {

@@ -36,6 +36,7 @@ public class GetUserInfoHandler implements Route {
       }
 
       Map<String, Object> result = storageHandler.getUser(uid);
+
       if (result == null) {
         responseMap.put("response_type", "failure");
         responseMap.put("error", "storage handler failed to find the user!");

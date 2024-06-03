@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 public class FirebaseUtilities /* implements StorageInterface */ {
 
@@ -65,19 +64,53 @@ public class FirebaseUtilities /* implements StorageInterface */ {
     user.put("uid", uid);
     user.put("name", name);
     user.put("email", email);
-    user.put("attribute preferences", preferences);
+    user.put("attribute preferences", preferences); // TODO: make these individual, not maps
     user.put("ranked spots", new ArrayList<>()); // TODO: ???
 
     db.collection("users").document(uid).set(user);
   }
 
   // returns null if something is not found!
-  public Map<String, Object> getUser(String uid) throws InterruptedException, ExecutionException {
+  // @SuppressWarnings("unchecked")
+  public Map<String, Object> getUser(String uid) throws DatabaseException {
     Firestore db = FirestoreClient.getFirestore(); // get reference to db
     DocumentReference docRef = db.collection("users").document(uid);
-    DocumentSnapshot futureResult = docRef.get().get();
-    // if (futureResult.exists()) *** checks if there was a result!!! (it will be a null document if not)
-    return futureResult.getData();
+    ApiFuture<DocumentSnapshot> future = docRef.get();
+    try {
+      DocumentSnapshot futureDocSnapshot = future.get();
+      if (futureDocSnapshot
+          .exists()) { // checks if there was a result!!! (it will be a null document if not)
+        return futureDocSnapshot.getData();
+        // return futureDocSnapshot.get("attribute preferences", Map.class);
+
+      } else {
+        throw new DatabaseException("No document found!");
+      }
+    } catch (
+        Exception e) { // DocumentSnapshot.get() throws InterruptedException, ExecutionException
+      throw new DatabaseException(e.getMessage());
+    }
+  }
+
+  public String getUserWifiPref(String uid) throws DatabaseException {
+    Firestore db = FirestoreClient.getFirestore(); // get reference to db
+    DocumentReference docRef = db.collection("users").document(uid);
+    ApiFuture<DocumentSnapshot> future = docRef.get();
+    try {
+      DocumentSnapshot futureDocSnapshot = future.get();
+      if (futureDocSnapshot
+          .exists()) { // checks if there was a result!!! (it will be a null document if not)
+        return futureDocSnapshot.get(
+            "wifi",
+            String
+                .class); // tells java that there is a key "wifi" that maps to a String, returns the
+        // String
+      } else {
+        throw new DatabaseException("No document found!");
+      }
+    } catch (Exception e) { // catch, rethrow the two exceptions thrown by DocumentSnapshot.get()
+      throw new DatabaseException(e.getMessage());
+    }
   }
 
   // public Long getAnswerCount(String quizLabel, String answer) {
